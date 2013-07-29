@@ -1,7 +1,13 @@
 alchemy API
 ===========
 
-This is a fork of the [Alchemy API](http://www.alchemyapi.com/) [SDK for C#](http://www.alchemyapi.com/developers/sdks/). It improves code quality many minor ways. Java coding style is replaced with more idiomatic C#, several minor bugs are fixed, more sensible defaults are used and requests are slightly more efficiently implmented.
+This is a fork of the [Alchemy API](http://www.alchemyapi.com/) [SDK for C#](http://www.alchemyapi.com/developers/sdks/). It improves code quality and adds some features:
+
+* SSL Support
+* GZip Support
+* More idiomatic C#
+* Minor bugfixes
+* Slightly more efficient
 
 Supported
 ---------
