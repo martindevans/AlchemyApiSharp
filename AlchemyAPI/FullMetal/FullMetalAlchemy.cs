@@ -8,11 +8,11 @@ namespace AlchemyAPI.FullMetal
 {
     public class FullMetalAlchemy
     {
-        private Alchemy _alchemy;
+        internal readonly Alchemy Alchemy;
 
         public int RequestCount
         {
-            get { return _alchemy.RequestCount; }
+            get { return Alchemy.RequestCount; }
         }
 
         /// <summary>
@@ -21,30 +21,56 @@ namespace AlchemyAPI.FullMetal
         /// <param name="apiKey">The Alchemy API key</param>
         public FullMetalAlchemy(string apiKey)
         {
-            _alchemy = new Alchemy
+            Alchemy = new Alchemy
             {
                 ApiKey = apiKey,
                 UseSSL = true
             };
 
-            Text = new Text(_alchemy);
+            Text = new Text(this);
         }
 
+        /// <summary>
+        /// Container for alchemy operations on text
+        /// </summary>
         public Text Text { get; private set; }
+
+        /// <summary>
+        /// Container for alchemy operations on html
+        /// </summary>
+        public Html Html { get; private set; }
+
+        /// <summary>
+        /// Container for alchemy operations on urls
+        /// </summary>
+        public Url Url { get; private set; }
+
+        internal IEnumerable<NamedEntity> ParseNamedEntities(XContainer root)
+        {
+            XElement resultsElement = root.Element("results");
+            if (resultsElement == null)
+                yield break;
+            XElement entitiesElement = resultsElement.Element("entities");
+            if (entitiesElement == null)
+                yield break;
+
+            foreach (var entity in entitiesElement.Elements("entity"))
+                yield return new NamedEntity(entity);
+        }
     }
 
     public class Text
     {
-        private readonly Alchemy _alchemy;
+        private readonly FullMetalAlchemy _fma;
 
-        internal Text(Alchemy alchemy)
+        internal Text(FullMetalAlchemy fma)
         {
-            _alchemy = alchemy;
+            _fma = fma;
         }
 
         public IEnumerable<NamedEntity> GetNamedEntities(string text)
         {
-            var result = _alchemy.TextGetRankedNamedEntities(text, new EntityParams
+            var result = _fma.Alchemy.TextGetRankedNamedEntities(text, new EntityParams
             {
                 Coreference = true,
                 Disambiguate = true,
@@ -56,17 +82,61 @@ namespace AlchemyAPI.FullMetal
             });
 
             XDocument xml = XDocument.Parse(result);
-            XElement resultsElement = xml.Element("results");
-            if (resultsElement == null)
-                yield break;
-            XElement entitiesElement = resultsElement.Element("entities");
-            if (entitiesElement == null)
-                yield break;
+            return _fma.ParseNamedEntities(xml);
+        }
+    }
 
-            foreach (var entity in entitiesElement.Elements("entity"))
+    public class Html
+    {
+        private readonly FullMetalAlchemy _fma;
+
+        internal Html(FullMetalAlchemy fma)
+        {
+            _fma = fma;
+        }
+
+        public IEnumerable<NamedEntity> GetNamedEntities(string html, string url)
+        {
+            var result = _fma.Alchemy.HTMLGetRankedNamedEntities(html, url, new EntityParams
             {
-                yield return new NamedEntity(entity);
-            }
+                Coreference = true,
+                Disambiguate = true,
+                LinkedData = true,
+                OutputMode = OutputMode.Xml,
+                Quotations = true,
+                Sentiment = true,
+                ShowSourceText = true,
+            });
+
+            XDocument xml = XDocument.Parse(result);
+            return _fma.ParseNamedEntities(xml);
+        }
+    }
+
+    public class Url
+    {
+        private readonly FullMetalAlchemy _fma;
+
+        internal Url(FullMetalAlchemy fma)
+        {
+            _fma = fma;
+        }
+
+        public IEnumerable<NamedEntity> GetNamedEntities(string url)
+        {
+            var result = _fma.Alchemy.URLGetRankedNamedEntities(url, new EntityParams
+            {
+                Coreference = true,
+                Disambiguate = true,
+                LinkedData = true,
+                OutputMode = OutputMode.Xml,
+                Quotations = true,
+                Sentiment = true,
+                ShowSourceText = true,
+            });
+
+            XDocument xml = XDocument.Parse(result);
+            return _fma.ParseNamedEntities(xml);
         }
     }
 }
