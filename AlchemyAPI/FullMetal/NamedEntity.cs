@@ -46,7 +46,12 @@ namespace AlchemyAPI.FullMetal
         /// </summary>
         public IEnumerable<Quotation> Quotes { get; private set; }
 
+        /// <summary>
+        /// The sentiment towards this entity
+        /// </summary>
         public Sentiment Sentiment { get; private set; }
+
+        public Disambigutation Disambigutation { get; private set; }
 
         public NamedEntity(XElement entity)
         {
@@ -54,32 +59,20 @@ namespace AlchemyAPI.FullMetal
             Subtypes = ParseSubtypes(entity).ToArray();
             Quotes = ParseQuotes(entity).ToArray();
 
+            Name = entity.MaybeGetElementValue("name");
+            Relevance = entity.MaybeParseElementValue<float>("relevance", float.Parse);
+            Count = entity.MaybeParseElementValue<int>("count", int.Parse);
+            Text = entity.MaybeGetElementValue("text");
+
             //Sentiment
             var sentimentElement = entity.Element("sentiment");
             if (sentimentElement != null)
                 Sentiment = new Sentiment(sentimentElement);
 
-            //Entity Name
-            var nameElement = entity.Element("name");
-            if (nameElement != null)
-                Name = nameElement.Value;
-
-            //Entity Relvance
-            var relevanceElement = entity.Element("relevance");
-            if (relevanceElement != null)
-                Relevance = float.Parse(relevanceElement.Value);
-
-            //Entity count
-            var countElement = entity.Element("count");
-            if (countElement != null)
-                Count = int.Parse(countElement.Value);
-
-            //Entity text
-            var textElement = entity.Element("text");
-            if (textElement != null)
-                Text = textElement.Value;
-
-            throw new NotImplementedException("Disambiguate");
+            //Disambiguation
+            var disambiguationElement = entity.Element("disambiguated");
+            if (disambiguationElement != null)
+                Disambigutation = new Disambigutation(disambiguationElement);
         }
 
         private static IEnumerable<Quotation> ParseQuotes(XElement entity)
@@ -89,9 +82,7 @@ namespace AlchemyAPI.FullMetal
                 yield break;
 
             foreach (var quote in disambiguatedElement.Elements("quotation"))
-            {
                 yield return new Quotation(quote);
-            }
         }
 
 

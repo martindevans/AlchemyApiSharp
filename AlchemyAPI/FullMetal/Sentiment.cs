@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Xml.Linq;
 
 namespace AlchemyAPI.FullMetal
@@ -12,7 +11,7 @@ namespace AlchemyAPI.FullMetal
         internal Sentiment(XElement element)
         {
             var t = element.Element("type");
-            if (t.Value != null)
+            if (t != null)
                 Type = (Sentiments)Enum.Parse(typeof(Sentiments), t.Value, true);
 
             var v = element.Element("score");
