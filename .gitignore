@@ -1,4 +1,6 @@
 *.suo
+*.ncrunchproject
+*.user
+*.cache
 */bin
 */obj
-*.ncrunchproject
