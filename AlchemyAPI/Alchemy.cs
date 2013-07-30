@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 namespace AlchemyAPI
@@ -28,13 +28,19 @@ namespace AlchemyAPI
             get { return _apiHost; }
             set
             {
-                _apiHost = value;
+                _apiHost = value ?? "access";   //Use a default api host
                 if (_apiHost.Length < 2)
                     throw new ArgumentException("value");
             }
         }
 
         public bool UseSSL { get; set; }
+
+        private int _requestCount;
+        public int RequestCount
+        {
+            get { return _requestCount; }
+        }
 
         private string _requestUri
         {
@@ -744,6 +750,8 @@ namespace AlchemyAPI
 
         private string DoRequest(HttpWebRequest wreq, OutputMode outputMode)
         {
+            Interlocked.Increment(ref _requestCount);
+
             using (HttpWebResponse wres = (HttpWebResponse) wreq.GetResponse())
             {
                 StreamReader r = new StreamReader(wres.GetResponseStream());
@@ -774,7 +782,6 @@ namespace AlchemyAPI
                 }
 
                 return xml;
-
             }
         }
     }
