@@ -1,4 +1,4 @@
-alchemy API
+Alchemy API
 ===========
 
 This is a fork of the [Alchemy API](http://www.alchemyapi.com/) [SDK for C#](http://www.alchemyapi.com/developers/sdks/). It improves code quality and adds some features:
@@ -8,6 +8,7 @@ This is a fork of the [Alchemy API](http://www.alchemyapi.com/) [SDK for C#](htt
 * More idiomatic C#
 * Minor bugfixes
 * Slightly more efficient
+* The beginnings of a strongly typed API (FullMetalAlchemy branch)
 
 Supported
 ---------
