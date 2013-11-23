@@ -49,10 +49,6 @@
     <Compile Include="ConceptParams.cs" />
     <Compile Include="ConstraintQueryParams.cs" />
     <Compile Include="EntityParams.cs" />
-    <Compile Include="FullMetal\FullMetalAlchemy.cs" />
-    <Compile Include="FullMetal\NamedEntity.cs" />
-    <Compile Include="FullMetal\Quotation.cs" />
-    <Compile Include="FullMetal\Sentiment.cs" />
     <Compile Include="KeywordParams.cs" />
     <Compile Include="LanguageParams.cs" />
     <Compile Include="RelationParams.cs" />
